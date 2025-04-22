@@ -15,7 +15,7 @@ def home():
 def login():
     email = request.form['email']
     password = request.form['password']
-    # Посмотрим
+    # Покажем
     return f"Email: {email}, Пароль: {password}"
 
 # Страница регистрации
@@ -34,6 +34,10 @@ def add_user():
     if user_password != user_confirm_password:
         # Если нет - выводим предупреждение
         return render_template('register.html', app_title=app_title, app_message='<p>Пароли не совпадают.</p>')
+
+    # Проверка email
+    if user_email == 'already_exists@mail.ru':
+        return render_template('register.html', app_title=app_title, app_message='<p>Такой email уже зарегистрирован.</p>')
 
     return f'Имя {user_name}, Почта: {user_email}, Пароль: {user_password}, Повтор: {user_confirm_password}'
 
