@@ -5,7 +5,7 @@
     <title>{{ app_title }}</title>
 </head>
 <body>
-    <p>{{ app_message }}</p>
+    <p>{{ app_message|safe }}</p>
     <h1>Date Nexus</h1>
     <form action="/login" method="post">
         <label for="email">Введите Email:</label>
