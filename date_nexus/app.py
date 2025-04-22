@@ -35,11 +35,20 @@ def add_user():
         # Если нет - выводим предупреждение
         return render_template('register.html', app_title=app_title, app_message='Пароли не совпадают.')
 
-    # Проверка email
+    # Проверяем, существует ли уже такой email
     if user_email == 'already_exists@mail.ru':
         return render_template('register.html', app_title=app_title, app_message='Такой email уже зарегистрирован.')
 
-    return f'Имя {user_name}, Почта: {user_email}, Пароль: {user_password}, Повтор: {user_confirm_password}'
+    # Всё ОК, добавляем пользователя в БД с пометкой, что почта не подтверждена
+    # Уведомляем, что на почту отправлена ссылка для подтверждения
+    return render_template('register.html', app_title=app_title, app_message='Отлично, регистрация прошла успешно! На указанную почту отправлена ссылка. Нажмите <a href="/confirm_email">сюда</a> для подтверждения.')
+
+# Страница подтверждения почты
+@app.route('/confirm_email')
+def confirm_email():
+    # Здесь проверяем корректность ссылки и подтверждаем почту
+    # Пользователь переходит в статус зарегистрированного и авторизированного
+    return render_template('confirm_email.html', app_title=app_title)
 
 # Запускаем
 app.run(debug=True)
