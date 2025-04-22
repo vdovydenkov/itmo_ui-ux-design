@@ -13,10 +13,14 @@ def home():
 # Прислали логин и пароль
 @app.route('/login', methods=['POST'])
 def login():
-    email = request.form['email']
-    password = request.form['password']
-    # Покажем
-    return f"Email: {email}, Пароль: {password}"
+    user_email = request.form['email']
+    user_password = request.form['password']
+    # Проверяем пользователя
+    if user_email != 'ok@mail.ru':
+        return render_template('index.html', app_title=app_title, app_message='Такой email не зарегистрирован.')
+
+    # Авторизация прошла успешно, переходим к основному окну событий и календарей
+    return render_template('events.html', app_title=app_title)
 
 # Страница регистрации
 @app.route('/register')
