@@ -5,7 +5,7 @@
     <title>{{ app_title }} // Регистрация</title>
 </head>
 <body>
-    <p>{{ app_message }}</p>
+    <p>{{ app_message|safe }}</p>
     <h1>Регистрация</h1>
     <form action="/register" method="post">
         <label for="name">Имя:</label>
