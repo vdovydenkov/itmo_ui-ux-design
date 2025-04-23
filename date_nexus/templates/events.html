@@ -5,6 +5,38 @@
     <title>{{ app_title }}</title>
 </head>
 <body>
-    <h1>События</h1>
+    <!-- Список событий -->
+    {% if events %}
+        <h1>События</h1>
+
+        <ul>
+            {% for event in events %}
+                <li><a href="/events.html?{{ event.id }}">{{ event.title }}</a></li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Нет событий</p>
+    {% endif %}
+
+    <!-- Кнопка "Добавить событие" -->
+    <button onclick="location.href='/add_event'">Добавить событие</button>
+
+    <!-- Список календарей -->
+    {% if calendars %}
+        <form>
+            {% for calendar in calendars %}
+                <input type="checkbox" id="{{ calendar.id }}" name="calendar" value="{{ calendar.id }}">
+                <label for="{{ calendar.id }}">{{ calendar.title }}</label><br>
+            {% endfor %}
+        </form>
+    {% else %}
+        <p>Нет календарей</p>
+    {% endif %}
+
+    <!-- Кнопка "Добавить календарь" -->
+    <br><button onclick="location.href='/add_calendar'">Добавить календарь</button>
+
+    <!-- Кнопка с именем пользователя -->
+    <button onclick="location.href='/profile'">{{ user_name }}</button>
 </body>
 </html>
