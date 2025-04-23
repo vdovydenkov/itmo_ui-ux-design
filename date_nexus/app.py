@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 
 # Заголовок для всех страниц
 app_title = 'DATE NEXUS'
@@ -20,7 +20,7 @@ def login():
         return render_template('index.html', app_title=app_title, app_message='Такой email не зарегистрирован.')
 
     # Авторизация прошла успешно, переходим к основному окну событий и календарей
-    return render_template('events.html', app_title=app_title)
+    return redirect(url_for('events'))
 
 # Страница регистрации
 @app.route('/register')
@@ -57,8 +57,22 @@ def confirm_email():
 # Основное окно событий и календарей
 @app.route('/events')
 def events():
-    # Главное окно программы
-    return render_template('events.html', app_title=app_title)
+    events = [
+        {'id': 1, 'title': 'Встреча с друзьями'},
+        {'id': 2, 'title': 'День рождения'}
+    ]
+    calendars = [
+        {'id': 'work', 'title': 'Рабочий календарь'},
+        {'id': 'personal', 'title': 'Личный календарь'}
+    ]
+    user_name = "Вася"
+
+    print("events:", events)
+    print("calendars:", calendars)
+    print("user_name:", user_name)
+
+    # Передача данных в шаблон
+    return render_template('events.html', app_title=app_title, events=events, calendars=calendars, user_name=user_name)
 
 # Запускаем
 app.run(debug=True)
