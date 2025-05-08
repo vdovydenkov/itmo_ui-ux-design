@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for
+from services.databaser import get_user_by_email, get_calendars_by_user_id, get_events_by_calendar
 
 # Заголовок для всех страниц
 app_title = 'DATE NEXUS'
@@ -57,14 +58,6 @@ def confirm_email():
 # Основное окно событий и календарей
 @app.route('/events')
 def events():
-    events = [
-        {'id': 1, 'title': 'Встреча с друзьями'},
-        {'id': 2, 'title': 'День рождения'}
-    ]
-    calendars = [
-        {'id': 'work', 'title': 'Рабочий календарь'},
-        {'id': 'personal', 'title': 'Личный календарь'}
-    ]
     user_name = "Вася"
 
     print("events:", events)
