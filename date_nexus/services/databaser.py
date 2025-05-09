@@ -87,8 +87,8 @@ def get_events_by_calendar(calendar_id: int) -> list[dict]:
         }
     ]
     if calendar_id == 0:
-        return personal_events
-    elif calendar_id == 1:
         return work_events
+    elif calendar_id == 1:
+        return personal_events
     else:
         return None
