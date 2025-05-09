@@ -1,8 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for
-from services.databaser import get_user_by_email, get_calendars_by_user_id, get_events_by_calendar
+from date_nexus.services.databaser import get_user_by_email, get_calendars_by_user_id, get_events_by_calendar
 
 # Заголовок для всех страниц
 app_title = 'DATE NEXUS'
+# Псевдосессия
+pseudo_session = None
 
 app = Flask(__name__)
 
@@ -14,13 +16,18 @@ def home():
 # Прислали логин и пароль
 @app.route('/login', methods=['POST'])
 def login():
+    global pseudo_session 
+
     user_email = request.form['email']
     user_password = request.form['password']
     # Проверяем пользователя
     if user_email != 'ok@mail.ru':
         return render_template('index.html', app_title=app_title, app_message='Такой email не зарегистрирован.')
 
-    # Авторизация прошла успешно, переходим к основному окну событий и календарей
+    # Авторизация прошла успешно, открываем сессию и запоминаем пользователя
+    pseudo_session = get_user_by_email(user_email)
+    print(f'Авторизовались: user_email={user_email}, pseudo_session={pseudo_session}')
+    # Переходим к основному окну событий и календарей
     return redirect(url_for('events'))
 
 # Страница регистрации
@@ -53,12 +60,32 @@ def add_user():
 def confirm_email():
     # Здесь проверяем корректность ссылки и подтверждаем почту
     # Пользователь переходит в статус зарегистрированного и авторизированного
+    pseudo_session = get_user_by_email('ok@mail.ru')
     return render_template('confirm_email.html', app_title=app_title)
 
 # Основное окно событий и календарей
 @app.route('/events')
 def events():
-    user_name = "Вася"
+    # Берём пользователя из сессии
+    user = pseudo_session
+    if not user:
+        print('Пользователь не залогинен.')
+        # Отправляемся на страницу входа
+        return render_template('index.html', app_title=app_title, app_message='Пользователь не авторизирован.')
+    print(f'Прошли проверку, user={user}')
+    # Получаем календари пользователя
+    user_id = user.get('id')
+    user_name = user.get('name')
+    calendars = get_calendars_by_user_id(user_id)
+    print(f'Получили календари: calendars={calendars}')
+    events = []
+    for calendar in calendars:
+        # Получаем события календаря
+        calendar_events = get_events_by_calendar(calendar['id'])
+        print(f'Получили события календаря: calendar_events={calendar_events}')
+        for event in calendar_events:
+            # Добавляем событие в общий список
+            events.append(event)
 
     print("events:", events)
     print("calendars:", calendars)
@@ -68,4 +95,5 @@ def events():
     return render_template('events.html', app_title=app_title, events=events, calendars=calendars, user_name=user_name)
 
 # Запускаем
-app.run(debug=True)
+if __name__ == '__main__':
+    app.run(debug=True)
