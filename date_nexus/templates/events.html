@@ -25,7 +25,12 @@
     {% if calendars %}
         <form>
             {% for calendar in calendars %}
-                <input type="checkbox" id="{{ calendar.id }}" name="calendar" value="{{ calendar.id }}">
+                <input
+                    type="checkbox"
+                    id="{{ calendar.id }}"
+                    name="calendar"
+                    value="{{ calendar.id }}"
+                    {% if calendar.selected %}checked{% endif %}>
                 <label for="{{ calendar.id }}">{{ calendar.title }}</label><br>
             {% endfor %}
         </form>
@@ -34,9 +39,12 @@
     {% endif %}
 
     <!-- Кнопка "Добавить календарь" -->
-    <br><button onclick="location.href='/add_calendar'">Добавить календарь</button>
+    <br>
+    <button onclick="location.href='/add_calendar'">Добавить календарь</button>
 
-    <!-- Кнопка с именем пользователя -->
-    <button onclick="location.href='/profile'">{{ user_name }}</button>
+    <!-- Кнопка с именем пользователя, вынесена отдельно от формы календарей -->
+    <div style="margin-top: 1em;">
+        <button onclick="location.href='/profile'">{{ user_name }}</button>
+    </div>
 </body>
 </html>
