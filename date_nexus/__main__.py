@@ -73,6 +73,26 @@ def confirm_email():
     # Пользователь переходит в статус зарегистрированного и авторизированного
     return render_template('confirm_email.html', app_title=app_title)
 
+# Переключение флажка календаря
+@app.route('/toggle_calendar', methods=['POST'])
+def toggle_calendar():
+    global pseudo_session
+
+    # Читаем из формы
+    calendar_id = request.form.get('calendar_id')
+    # Если checkbox отмечен, в форме приходит selected=='1', иначе параметр отсутствует
+    selected = 'selected' in request.form
+
+    # Обновляем статус в pseudo_session
+    if pseudo_session and 'calendars' in pseudo_session:
+        for calendar in pseudo_session['calendars']:
+            if str(calendar.get('id')) == calendar_id:
+                calendar['selected'] = selected
+                break
+
+    # После изменения перенаправляем обратно на страницу events
+    return redirect(url_for('events'))
+
 # Основное окно событий и календарей
 @app.route('/events')
 def events():
@@ -94,7 +114,7 @@ def events():
     for calendar in calendars:
         # Если календарь не выбран
         if not calendar.get('selected'):
-            break
+            continue
         # Получаем события календаря
         calendar_events = get_events_by_calendar(calendar['id'])
         print(f'Events: Получили события календаря: calendar_events={calendar_events}')
@@ -112,3 +132,4 @@ def events():
 # Запускаем
 if __name__ == '__main__':
     app.run(debug=True)
+

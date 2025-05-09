@@ -23,17 +23,23 @@
 
     <!-- Список календарей -->
     {% if calendars %}
-        <form>
-            {% for calendar in calendars %}
-                <input
-                    type="checkbox"
-                    id="{{ calendar.id }}"
-                    name="calendar"
-                    value="{{ calendar.id }}"
-                    {% if calendar.selected %}checked{% endif %}>
+        {% for calendar in calendars %}
+            <!-- для каждого календаря — своя форма -->
+            <form method="post" action="{{ url_for('toggle_calendar') }}">
+                <!-- передаём id календаря -->
+                <input type="hidden" name="calendar_id" value="{{ calendar.id }}">
+                <!-- чекбокс: при изменении формы сразу отправляем -->
+                <input 
+                    type="checkbox" 
+                    id="{{ calendar.id }}" 
+                    name="selected" 
+                    value="1" 
+                    {% if calendar.selected %}checked{% endif %}
+                    onchange="this.form.submit()"
+                >
                 <label for="{{ calendar.id }}">{{ calendar.title }}</label><br>
-            {% endfor %}
-        </form>
+            </form>
+        {% endfor %}
     {% else %}
         <p>Нет календарей</p>
     {% endif %}
@@ -42,7 +48,7 @@
     <br>
     <button onclick="location.href='/add_calendar'">Добавить календарь</button>
 
-    <!-- Кнопка с именем пользователя, вынесена отдельно от формы календарей -->
+    <!-- Кнопка с именем пользователя -->
     <div style="margin-top: 1em;">
         <button onclick="location.href='/profile'">{{ user_name }}</button>
     </div>
