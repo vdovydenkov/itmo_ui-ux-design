@@ -22,11 +22,22 @@ def login():
     user_password = request.form['password']
     # Проверяем пользователя
     if user_email != 'ok@mail.ru':
+        # Аутентификация не прошла
         return render_template('index.html', app_title=app_title, app_message='Такой email не зарегистрирован.')
 
-    # Авторизация прошла успешно, открываем сессию и запоминаем пользователя
-    pseudo_session = get_user_by_email(user_email)
-    print(f'Авторизовались: user_email={user_email}, pseudo_session={pseudo_session}')
+    # Аутентификация прошла успешно
+    user = get_user_by_email('ok@mail.ru')
+    user_id = user.get('id')
+    print(f'Авторизовались: user_id={user_id}, user_email={user_email}')
+    # Грузим данные
+    calendars = get_calendars_by_user_id(user_id)
+    print(f'Получили календари: calendars={calendars}')
+    if not pseudo_session:
+        pseudo_session = {}
+    # Грузим данные в сессию
+    pseudo_session['user'] = user
+    pseudo_session['calendars'] = calendars
+    print(f'Загрузили в сессию: pseudo_session={pseudo_session}')
     # Переходим к основному окну событий и календарей
     return redirect(url_for('events'))
 
@@ -60,29 +71,33 @@ def add_user():
 def confirm_email():
     # Здесь проверяем корректность ссылки и подтверждаем почту
     # Пользователь переходит в статус зарегистрированного и авторизированного
-    pseudo_session = get_user_by_email('ok@mail.ru')
     return render_template('confirm_email.html', app_title=app_title)
 
 # Основное окно событий и календарей
 @app.route('/events')
 def events():
-    # Берём пользователя из сессии
-    user = pseudo_session
+    if not pseudo_session:
+        print('events: нет сессии.')
+        # Отправляемся на страницу входа
+        return render_template('index.html', app_title=app_title, app_message='Пользователь не авторизирован.')
+    # Берём пользователя и календари из сессии
+    user = pseudo_session['user']
+    calendars = pseudo_session['calendars']
     if not user:
-        print('Пользователь не залогинен.')
+        print('Events: Пользователь не залогинен.')
         # Отправляемся на страницу входа
         return render_template('index.html', app_title=app_title, app_message='Пользователь не авторизирован.')
     print(f'Прошли проверку, user={user}')
-    # Получаем календари пользователя
     user_id = user.get('id')
     user_name = user.get('name')
-    calendars = get_calendars_by_user_id(user_id)
-    print(f'Получили календари: calendars={calendars}')
     events = []
     for calendar in calendars:
+        # Если календарь не выбран
+        if not calendar.get('selected'):
+            break
         # Получаем события календаря
         calendar_events = get_events_by_calendar(calendar['id'])
-        print(f'Получили события календаря: calendar_events={calendar_events}')
+        print(f'Events: Получили события календаря: calendar_events={calendar_events}')
         for event in calendar_events:
             # Добавляем событие в общий список
             events.append(event)
