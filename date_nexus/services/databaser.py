@@ -14,14 +14,23 @@ def get_user_by_email(email: str) -> dict:
 def get_calendars_by_user_id(user_id: int) -> list[dict]:
     '''Возвращает список словарей с календарями по id пользователя.'''
     calendars = [
-        {'id': 0, 'title': 'Рабочий календарь', 'access_level': 3},
-        {'id': 1, 'title': 'Личный календарь', 'access_level': 0}
+        {'id': 0, 'title': 'Рабочий календарь'},
+        {'id': 1, 'title': 'Личный календарь'}
     ]
 
     if user_id == 0:
         return calendars
     else:
         return None
+
+def get_user_access(user_id: int, calendar_id: int) -> int:
+    '''Возвращает уровень доступа по id пользователя и id календаря.'''
+    if user_id == 0:
+        if calendar_id == 0: # рабочий календарь, доступ "только чтение"
+            return 0
+        elif calendar_id == 1: # Личный календарь, доступ "владелец"
+            return 3
+    return None
 
 def get_events_by_calendar(calendar_id: int) -> list[dict]:
     '''Возвращает список событий по id календаря.'''
