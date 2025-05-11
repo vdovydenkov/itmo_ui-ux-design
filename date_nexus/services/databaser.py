@@ -41,7 +41,8 @@ def get_events_by_calendar(calendar_id: int) -> list[dict]:
             'date': '2025-05-11',
             'time': '19:00',
             'duration': 120,
-            'location': 'Кинотеатр Аврора'
+            'location': 'Кинотеатр Аврора',
+            'calendar_id': 1,
         },
         {
             'id': 2,
@@ -49,7 +50,8 @@ def get_events_by_calendar(calendar_id: int) -> list[dict]:
             'date': '2025-05-13',
             'time': '18:30',
             'recurrence': 7,
-            'location': 'Кафе на углу'
+            'location': 'Кафе на углу',
+            'calendar_id': 1,
         },
         {
             'id': 3,
@@ -57,6 +59,7 @@ def get_events_by_calendar(calendar_id: int) -> list[dict]:
             'date': '2025-05-15',
             'time': '17:00',
             'duration': 90,
+            'calendar_id': 1,
         }
     ]
 
@@ -68,7 +71,8 @@ def get_events_by_calendar(calendar_id: int) -> list[dict]:
             'time': '10:00',
             'duration': 60,
             'recurrence': 1,
-            'location': 'Зал переговоров'
+            'location': 'Зал переговоров',
+            'calendar_id': 0,
         },
         {
             'id': 2,
@@ -76,7 +80,8 @@ def get_events_by_calendar(calendar_id: int) -> list[dict]:
             'date': '2025-05-14',
             'time': '14:00',
             'duration': 45,
-            'location': 'Конференц-зал'
+            'location': 'Конференц-зал',
+            'calendar_id': 0,
         },
         {
             'id': 3,
@@ -84,6 +89,7 @@ def get_events_by_calendar(calendar_id: int) -> list[dict]:
             'date': '2025-05-20',
             'time': '09:00',
             'duration': 30,
+            'calendar_id': 0,
         }
     ]
     if calendar_id == 0:
@@ -91,4 +97,4 @@ def get_events_by_calendar(calendar_id: int) -> list[dict]:
     elif calendar_id == 1:
         return personal_events
     else:
-        return None
+        return []
