@@ -1,0 +1,66 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ app_title }} — Добавить событие</title>
+</head>
+<body>
+    <h1>Добавить событие</h1>
+
+    <form method="post" action="{{ url_for('add_event') }}">
+        <!-- Название события -->
+        <div>
+            <label for="title">Назовите событие</label><br>
+            <input type="text" id="title" name="title" required>
+        </div>
+
+        <!-- Дата -->
+        <div>
+            <label for="date">Назначьте дату</label><br>
+            <input type="date" id="date" name="date" required>
+        </div>
+
+        <!-- Время -->
+        <div>
+            <label for="time">Можно указать время (если нужно)</label><br>
+            <input type="time" id="time" name="time">
+        </div>
+
+        <!-- Длительность -->
+        <div>
+            <label for="duration">Можно задать длительность в минутах</label><br>
+            <input type="number" id="duration" name="duration" min="1" placeholder="60">
+        </div>
+
+        <!-- Периодичность -->
+        <div>
+            <label for="recurrence">Можно установить, с какой периодичностью оно будет происходить? Можно выбрать количество дней:</label><br>
+            <input type="number" id="recurrence" name="recurrence" min="1" placeholder="Например, 7 для каждонедельного">
+        </div>
+
+        <!-- Локация -->
+        <div>
+            <label for="location">Укажите название места (локации), если это вам нужно</label><br>
+            <input type="text" id="location" name="location">
+        </div>
+
+        <!-- Выбор календаря -->
+        <div>
+            <label for="calendar_id">Обязательно выберите календарь</label><br>
+            <select id="calendar_id" name="calendar_id" required>
+                <option value="" disabled selected>-- выберите календарь --</option>
+                {% for calendar in calendars %}
+                    <option value="{{ calendar.id }}">{{ calendar.title }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Кнопка отправки -->
+        <div style="margin-top: 1em;">
+            <button type="submit">Добавить</button>
+        </div>
+    </form>
+
+    <p><a href="{{ url_for('events') }}">← Назад к событиям</a></p>
+</body>
+</html>
