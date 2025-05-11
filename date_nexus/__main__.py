@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash
 from date_nexus.services.databaser import get_user_by_email, get_calendars_by_user_id, get_events_by_calendar
 
 # Заголовок для всех страниц
@@ -32,11 +32,16 @@ def login():
     # Грузим данные
     calendars = get_calendars_by_user_id(user_id)
     print(f'Получили календари: calendars={calendars}')
+    events = []
+    # Грузим все события календарей
+    for calendar in calendars:
+        events.extend(get_events_by_calendar(calendar.get('id')))
     if not pseudo_session:
         pseudo_session = {}
     # Грузим данные в сессию
     pseudo_session['user'] = user
     pseudo_session['calendars'] = calendars
+    pseudo_session['events'] = events
     print(f'Загрузили в сессию: pseudo_session={pseudo_session}')
     # Переходим к основному окну событий и календарей
     return redirect(url_for('events'))
@@ -100,9 +105,10 @@ def events():
         print('events: нет сессии.')
         # Отправляемся на страницу входа
         return render_template('index.html', app_title=app_title, app_message='Пользователь не авторизирован.')
-    # Берём пользователя и календари из сессии
+    # Берём пользователя, календари и события из сессии
     user = pseudo_session['user']
     calendars = pseudo_session['calendars']
+    events = pseudo_session['events']
     if not user:
         print('Events: Пользователь не залогинен.')
         # Отправляемся на страницу входа
@@ -110,26 +116,77 @@ def events():
     print(f'Прошли проверку, user={user}')
     user_id = user.get('id')
     user_name = user.get('name')
-    events = []
+    selected_events = []
+    # Фильтруем события из выбранных календарей.
     for calendar in calendars:
-        # Если календарь не выбран
-        if not calendar.get('selected'):
-            continue
-        # Получаем события календаря
-        calendar_events = get_events_by_calendar(calendar['id'])
-        print(f'Events: Получили события календаря: calendar_events={calendar_events}')
-        for event in calendar_events:
-            # Добавляем событие в общий список
-            events.append(event)
+        selected_events.extend([
+            event for event in events
+            if calendar['id'] == event.get('calendar_id')
+            and calendar.get('selected')
+        ])
 
-    print("events:", events)
+    print("selected_events:", selected_events)
     print("calendars:", calendars)
     print("user_name:", user_name)
 
     # Передача данных в шаблон
-    return render_template('events.html', app_title=app_title, events=events, calendars=calendars, user_name=user_name)
+    return render_template('events.html', app_title=app_title, events=selected_events, calendars=calendars, user_name=user_name)
+
+@app.route('/add_event', methods=['GET', 'POST'])
+def add_event():
+    global pseudo_session
+    if not pseudo_session or 'user' not in pseudo_session:
+        flash('Пользователь не авторизирован.')
+        return redirect(url_for('home'))
+
+    user = pseudo_session['user']
+    calendars = pseudo_session.get('calendars', [])
+    events = pseudo_session.get('events', [])
+
+    if request.method == 'POST':
+        # Считываем данные из формы
+        title      = request.form.get('title')
+        date       = request.form.get('date')
+        time       = request.form.get('time') or None
+        duration   = request.form.get('duration') or None
+        recurrence = request.form.get('recurrence') or None
+        location   = request.form.get('location') or None
+        calendar_id = request.form.get('calendar_id')
+
+        # Валидация обязательных полей
+        if not title or not date or not calendar_id:
+            flash('Пожалуйста, заполните все обязательные поля.')
+            return render_template(
+                'add_event.html',
+                app_title=app_title,
+                calendars=calendars
+            )
+
+        # Подготовка словаря события
+        event_data = {
+            'title': title,
+            'date': date,
+            'time': time,
+            'duration': int(duration) if duration else None,
+            'recurrence_days': int(recurrence) if recurrence else None,
+            'location': location,
+            'calendar_id': int(calendar_id),
+        }
+
+        # Сохраняем в events
+        events.append(event_data)
+
+        flash('Событие успешно добавлено!')
+        return redirect(url_for('events'))
+
+    # GET: показываем форму
+    return render_template(
+        'add_event.html',
+        app_title=app_title,
+        calendars=calendars
+    )
 
 # Запускаем
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, use_reloader=True)
 
