@@ -216,7 +216,32 @@ def add_calendar():
         calendars=calendars
     )
 
+# Профиль пользователя
+@app.route('/profile', methods=['GET', 'POST'])
+def user_profile():
+    if 'user' not in session:
+        flash('Пользователь не авторизирован.')
+        return redirect(url_for('home'))
+    user = session['user']
+
+    if request.method == 'POST':
+        # Проверяем, отправлена ли форма удаления
+        if request.form.get('delete_user') == 'yes':
+            # После успешного удаления:
+            session.clear()
+            flash('Ваш пользователь и все связанные данные удалены.')
+            return redirect(url_for('home'))
+    # GET: показываем форму профиля
+    return render_template(
+        'profile.html',
+        app_title=app_title,
+        user=user
+    )
+
+def main():
+    app.run(debug=True, use_reloader=True)
+
 # Запускаем
 if __name__ == '__main__':
-    app.run(debug=True, use_reloader=True)
+    main()
 

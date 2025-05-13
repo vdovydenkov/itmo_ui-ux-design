@@ -1,0 +1,34 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ app_title }}</title>
+</head>
+<body>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul class="flashes">
+          {% for msg in messages %}
+            <li>{{ msg }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+    <h1>{{ user.name }}</h1>
+
+    <p>Ваш email: {{ user.email }}</p>
+
+    <!-- Форма удаления пользователя -->
+    <form method="post" action="{{ url_for('user_profile') }}">
+      <p style="color: red; font-weight: bold;">
+        Все ваши календари и события будут также безвозвратно удалены
+      </p>
+      <label>
+        <input type="checkbox" name="delete_user" value="yes">
+        Удалить пользователя
+      </label>
+      <button type="submit">Подтверждаю удаление своего пользователя!</button>
+    </form>
+
+</body>
+</html>
