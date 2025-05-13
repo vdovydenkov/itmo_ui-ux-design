@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from itertools import count
+from datetime import date
 from date_nexus.services.databaser import get_user_by_email, get_calendars_by_user_id, get_events_by_calendar
 
 # Заголовок для всех страниц
@@ -224,6 +225,8 @@ def add_calendar():
     if request.method == 'POST':
         # Считываем данные
         new_title = request.form.get('title')
+        # Сохраняем текущую дату
+        register_at = date.today().isoformat()
         # Собираем все id
         used_ids = {calendar['id'] for calendar in calendars}
         # Берём id из множества целых, которого нет в used_ids
@@ -231,6 +234,7 @@ def add_calendar():
         new_calendar = {
             'id': new_id,
             'title': new_title,
+            'register_at': register_at,
             'selected': True
         }
         # Добавляем в список
