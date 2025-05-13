@@ -101,16 +101,42 @@ def events():
         print('events: нет сессии.')
         # Отправляемся на страницу входа
         return render_template('index.html', app_title=app_title, app_message='Пользователь не авторизирован.')
+
+    # Поддержка удаления через GET-параметр
+    action = request.args.get('action')
+    if action == 'delete':
+        event_id = request.args.get('id', type=int)
+        if event_id is not None and 'events' in session:
+            # Берём название удаляемого события
+            event_title = next(
+                (
+                    ev['title'] for ev in session['events']
+                    if ev.get('id') == event_id
+                ),
+                ''  # Если не нашли название события
+            )
+            # удаляем из сессии
+            before = len(session['events'])
+            session['events'] = [
+                ev for ev in session['events']
+                if ev.get('id') != event_id
+            ]
+            after = len(session['events'])
+            if after < before:
+                flash(f'Событие {event_title} удалено.')
+        # чтобы не повторять удаление при перезагрузке — редирект без параметров
+        return redirect(url_for('events'))
+
     # Берём пользователя, календари и события из сессии
-    user = session.get('user')
+    user      = session.get('user')
     calendars = session.get('calendars', [])
-    events = session.get('events', [])
+    events    = session.get('events', [])
     if not user:
         print('Events: Пользователь не залогинен.')
         # Отправляемся на страницу входа
         return render_template('index.html', app_title=app_title, app_message='Пользователь не авторизирован.')
     print(f'Прошли проверку, user={user}')
-    user_id = user.get('id')
+    user_id   = user.get('id')
     user_name = user.get('name')
     selected_events = []
     # Фильтруем события из выбранных календарей.
@@ -126,7 +152,13 @@ def events():
     print("user_name:", user_name)
 
     # Передача данных в шаблон
-    return render_template('events.html', app_title=app_title, events=selected_events, calendars=calendars, user_name=user_name)
+    return render_template(
+        'events.html',
+        app_title=app_title,
+        events=selected_events,
+        calendars=calendars,
+        user_name=user_name
+    )
 
 # Добавление события
 @app.route('/add_event', methods=['GET', 'POST'])

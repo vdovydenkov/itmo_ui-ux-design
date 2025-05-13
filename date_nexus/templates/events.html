@@ -3,6 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <title>{{ app_title }}</title>
+    <style>
+    /* Контекстное меню */
+    .context-menu {
+        border: 1px solid #ccc;
+        background-color: #fff;
+        z-index: 1000;
+        position: absolute;
+        display: none;
+    }
+    .context-menu ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 5px 0;
+    }
+    .context-menu ul li {
+        padding: 5px 10px;
+        cursor: pointer;
+    }
+    .context-menu ul li:hover {
+        background-color: #f0f0f0;
+    }
+    </style>
 </head>
 <body>
     {% with messages = get_flashed_messages() %}
@@ -21,7 +43,17 @@
 
         <ul>
             {% for event in events %}
-                <li><a href="/events.html?{{ event.id }}">{{ event.title }}</a></li>
+                {# каждый event делаем кликабельным и добавляем data-атрибуты для деталей #}
+                <li class="event"
+                    data-event-id="{{ event.id }}"
+                    data-calendar="{{ calendars | selectattr('id','equalto',event.calendar_id) | map(attribute='title') | list | first }}"
+                    data-datetime="{{ event.date }}{% if event.time %} {{ event.time }}{% endif %}"
+                    data-duration="{{ event.duration if event.duration else '' }}"
+                    data-recurrence="{{ event.recurrence_days if event.recurrence_days else '' }}"
+                    data-location="{{ event.location if event.location else '' }}"
+                >
+                    {{ event.title }}
+                </li>
             {% endfor %}
         </ul>
     {% else %}
@@ -62,5 +94,67 @@
     <div style="margin-top: 1em;">
         <button onclick="location.href='/profile'">{{ user_name }}</button>
     </div>
+
+    <!-- Контекстное меню -->
+    <div id="contextMenu" class="context-menu">
+        <ul>
+            <li id="viewDetails">Подробнее...</li>
+            <li id="deleteEvent">Удалить</li>
+        </ul>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const menu = document.getElementById('contextMenu');
+        let selectedEl = null;
+
+        // делаем события кликабельными
+        document.querySelectorAll('.event').forEach(el => {
+            el.style.cursor = 'pointer';
+            el.addEventListener('click', function(e) {
+                e.preventDefault();
+                selectedEl = this;
+
+                // позиционируем меню
+                menu.style.left = e.pageX + 'px';
+                menu.style.top = e.pageY + 'px';
+                menu.style.display = 'block';
+            });
+        });
+
+        // при клике вне меню — скрыть его
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.context-menu') && !e.target.closest('.event')) {
+                menu.style.display = 'none';
+            }
+        });
+
+        // Подробнее...
+        document.getElementById('viewDetails').addEventListener('click', function() {
+            if (!selectedEl) return;
+            const cal   = selectedEl.dataset.calendar;
+            const dt    = selectedEl.dataset.datetime;
+            const dur   = selectedEl.dataset.duration || 'N/A';
+            const rec   = selectedEl.dataset.recurrence || 'N/A';
+            const loc   = selectedEl.dataset.location || 'N/A';
+            alert(
+                'Календарь: ' + cal + '\n' +
+                'Дата и время: ' + dt + '\n' +
+                'Продолжительность: ' + dur + '\n' +
+                'Периодичность: ' + rec + '\n' +
+                'Где: ' + loc
+            );
+            menu.style.display = 'none';
+        });
+
+        // Удалить
+        document.getElementById('deleteEvent').addEventListener('click', function() {
+            if (!selectedEl) return;
+            const id = selectedEl.dataset.eventId;
+            // передаём action=delete в query
+            window.location = '/events?action=delete&id=' + encodeURIComponent(id);
+        });
+    });
+    </script>
 </body>
 </html>
