@@ -36,7 +36,7 @@ def get_events_by_calendar(calendar_id: int) -> list[dict]:
     '''Возвращает список событий по id календаря.'''
     personal_events = [
         {
-            'id': 1,
+            'id': 0,
             'title': 'Поход в кино',
             'date': '2025-05-11',
             'time': '19:00',
@@ -45,7 +45,7 @@ def get_events_by_calendar(calendar_id: int) -> list[dict]:
             'calendar_id': 1,
         },
         {
-            'id': 2,
+            'id': 1,
             'title': 'Встреча с друзьями',
             'date': '2025-05-13',
             'time': '18:30',
@@ -54,7 +54,7 @@ def get_events_by_calendar(calendar_id: int) -> list[dict]:
             'calendar_id': 1,
         },
         {
-            'id': 3,
+            'id': 2,
             'title': 'Прогулка в парке',
             'date': '2025-05-15',
             'time': '17:00',
@@ -65,7 +65,7 @@ def get_events_by_calendar(calendar_id: int) -> list[dict]:
 
     work_events = [
         {
-            'id': 1,
+            'id': 3,
             'title': 'Совещание отдела',
             'date': '2025-05-09',
             'time': '10:00',
@@ -75,7 +75,7 @@ def get_events_by_calendar(calendar_id: int) -> list[dict]:
             'calendar_id': 0,
         },
         {
-            'id': 2,
+            'id': 4,
             'title': 'Презентация проекта',
             'date': '2025-05-14',
             'time': '14:00',
@@ -84,7 +84,7 @@ def get_events_by_calendar(calendar_id: int) -> list[dict]:
             'calendar_id': 0,
         },
         {
-            'id': 3,
+            'id': 5,
             'title': 'Отчет перед руководством',
             'date': '2025-05-20',
             'time': '09:00',
