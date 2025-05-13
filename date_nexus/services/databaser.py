@@ -14,8 +14,17 @@ def get_user_by_email(email: str) -> dict:
 def get_calendars_by_user_id(user_id: int) -> list[dict]:
     '''Возвращает список словарей с календарями по id пользователя.'''
     calendars = [
-        {'id': 0, 'title': 'Рабочий календарь', 'selected': True},
-        {'id': 1, 'title': 'Личный календарь', 'selected': True}
+        {
+            'id': 0,
+            'title': 'Рабочий календарь',
+            'register_at': '2025-02-23',
+            'selected': True
+        },
+        {
+            'id': 1,
+            'title': 'Личный календарь',
+            'register_at': '2025-03-08',
+            'selected': True}
     ]
 
     if user_id == 0:

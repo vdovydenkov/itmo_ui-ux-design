@@ -79,7 +79,7 @@
                     {% if calendar.selected %}checked{% endif %}
                     onchange="this.form.submit()"
                 >
-                <label for="{{ calendar.id }}">{{ calendar.title }}</label><br>
+                <label for="{{ calendar.id }}">{{ calendar.title }}, ({{ calendar.register_at }})</label><br>
             </form>
         {% endfor %}
     {% else %}
