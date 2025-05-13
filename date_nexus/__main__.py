@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
+from itertools import count
 from date_nexus.services.databaser import get_user_by_email, get_calendars_by_user_id, get_events_by_calendar
 
 # Заголовок для всех страниц
@@ -136,7 +137,6 @@ def add_event():
 
     user = session.get('user')
     calendars = session.get('calendars', [])
-    # events = session.get('events', [])
 
     if request.method == 'POST':
         # Считываем данные из формы
@@ -177,6 +177,41 @@ def add_event():
     # GET: показываем форму
     return render_template(
         'add_event.html',
+        app_title=app_title,
+        calendars=calendars
+    )
+
+# Добавление календаря
+@app.route('/add_calendar', methods=['GET', 'POST'])
+def add_calendar():
+    if 'user' not in session:
+        flash('Пользователь не авторизирован.')
+        return redirect(url_for('home'))
+    calendars = session.get('calendars', [])
+    # Если пришла форма
+    if request.method == 'POST':
+        # Считываем данные
+        new_title = request.form.get('title')
+        # Собираем все id
+        used_ids = {calendar['id'] for calendar in calendars}
+        # Берём id из множества целых, которого нет в used_ids
+        new_id = next(i for i in count(0) if i not in used_ids)
+        new_calendar = {
+            'id': new_id,
+            'title': new_title,
+            'selected': True
+        }
+        # Добавляем в список
+        calendars.append(new_calendar)
+        # Обновляем сессию
+        session['calendars'] = calendars
+
+        flash('Календарь добавлен!')
+        return redirect(url_for('events'))
+
+    # GET: показываем форму
+    return render_template(
+        'add_calendar.html',
         app_title=app_title,
         calendars=calendars
     )

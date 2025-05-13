@@ -1,0 +1,29 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ app_title }} — Добавить календарь</title>
+</head>
+<body>
+    <h1>Добавить календарь</h1>
+
+    <form method="post" action="{{ url_for('add_calendar') }}">
+        <!-- Название календаря -->
+        <div>
+            <label for="title">Назовите новый календарь</label><br>
+            <input type="text" id="title" name="title" required>
+        </div>
+
+        <!-- Кнопка отправки -->
+        <div style="margin-top: 1em;">
+            <button type="submit">Добавить</button>
+        </div>
+    </form>
+
+    <h1>Уже существующие календари</h1>
+        <ul>{% for calendar in calendars %}
+            <li>{{ calendar.title }}</li>
+        {% endfor %}</ul>
+    <p><a href="{{ url_for('events') }}">← Назад к событиям</a></p>
+</body>
+</html>
