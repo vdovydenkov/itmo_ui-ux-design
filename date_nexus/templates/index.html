@@ -6,6 +6,17 @@
 </head>
 <body>
     <p>{{ app_message|safe }}</p>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul class="flashes">
+          {% for msg in messages %}
+            <li>{{ msg }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
     <h1>Date Nexus</h1>
     <form action="/login" method="post">
         <label for="email">Введите Email:</label>
