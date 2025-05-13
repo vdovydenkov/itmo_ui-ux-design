@@ -98,23 +98,7 @@ deactivate System
 
 ---
 
-### **6. "Поделиться" календарём**
-
-@startuml
-actor "Зарегистрированный пользователь" as User
-participant "Система" as System
-
-User -> System: Выбор календаря и нажатие кнопки "Поделиться"
-activate System
-User -> System: Ввод email другого пользователя и установка уровня доступа
-System -> System: Добавление соответствующей записи в таблицу UserAccess
-System -> User: Подтверждение успешного добавления доступа
-deactivate System
-@enduml
-
----
-
-### **7. Удаление учетной записи**
+### **6. Удаление учетной записи**
 
 @startuml
 actor "Авторизованный пользователь" as User
