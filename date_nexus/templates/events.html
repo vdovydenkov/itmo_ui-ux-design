@@ -52,7 +52,7 @@
                     data-recurrence="{{ event.recurrence_days if event.recurrence_days else '' }}"
                     data-location="{{ event.location if event.location else '' }}"
                 >
-                    {{ event.title }}
+                    {{ event.date }}{% if event.time %} {{ event.time }}{% endif %} — {{ event.title }}
                 </li>
             {% endfor %}
         </ul>
