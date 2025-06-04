@@ -14,6 +14,11 @@ app.secret_key = '1,2,3,4,5,5.4.3.2.1' # Понятно, что так нель�
 def home():
     return render_template('index.html', app_title=app_title)
 
+# Справка
+@app.route('/help')
+def help():
+    return render_template('help.html', app_title=app_title)
+
 # Прислали логин и пароль
 @app.route('/login', methods=['POST'])
 def login():
